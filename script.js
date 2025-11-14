@@ -60,28 +60,26 @@ function guardar() {
     edad: document.getElementById("edad").value.trim()
   };
 
-  // 1. Obtener la lista actual (si existe)
   let lista = JSON.parse(localStorage.getItem("usuarios")) || [];
-
-  // 2. Agregar el nuevo usuario
   lista.push(nuevoUsuario);
-
-  // 3. Guardar la nueva lista
   localStorage.setItem("usuarios", JSON.stringify(lista));
 
-  mostrarMensaje("Usuario guardado correctamente. ");
+  mostrarMensaje("Usuario guardado correctamente.");
+  limpiarFormulario();
 }
 
 // -----------------------------------------------------
-// VER DATOS
+// VER DATOS (con botón dinámico y validación extra)
 // -----------------------------------------------------
-
 function verDatos() {
     const contenedor = document.getElementById("resultado");
     const btnVer = document.getElementById("btnVer");
-    const datos = localStorage.getItem("usuarios");
 
-    if (!datos || JSON.parse(datos).length === 0) {
+    const datos = localStorage.getItem("usuarios");
+    const usuarios = datos ? JSON.parse(datos) : [];
+
+    // 🔥 VALIDACIÓN EXTRA: si NO hay datos → mostrar msj y NO cambiar botón
+    if (usuarios.length === 0) {
         mostrarMensaje("No hay datos guardados.");
         return;
     }
@@ -93,7 +91,7 @@ function verDatos() {
         return;
     }
 
-    const usuarios = JSON.parse(datos);
+    // Construir HTML si hay datos
     let html = "<strong>Usuarios almacenados:</strong><br><br>";
 
     usuarios.forEach((u, index) => {
@@ -112,6 +110,8 @@ function verDatos() {
     });
 
     mostrarMensaje(html);
+
+    // 🔥 Cambio de texto SOLO si sí había datos
     btnVer.textContent = "Ocultar datos";
 
     // Activar botones individuales
@@ -125,46 +125,42 @@ function verDatos() {
 // -----------------------------------------------------
 // LIMPIAR FORMULARIO
 // -----------------------------------------------------
-
 function limpiarFormulario() {
     const nombre = document.getElementById("nombre").value.trim();
     const email = document.getElementById("email").value.trim();
     const edad = document.getElementById("edad").value.trim();
 
-    // Si todos los campos están vacíos → no hay nada que limpiar
     if (nombre === "" && email === "" && edad === "") {
         mostrarMensaje("No hay datos para limpiar.");
         return;
     }
 
-    // Si hay algo escrito → limpiar
     document.getElementById("formulario").reset();
     document.querySelectorAll(".error").forEach(e => e.textContent = "");
-
     mostrarMensaje("Formulario limpiado.");
 }
 
-
 // -----------------------------------------------------
-// BORRAR DATOS DEL LOCALSTORAGE
+// BORRAR TODOS LOS DATOS
 // -----------------------------------------------------
-
 function borrarDatos() {
     const usuariosGuardados = localStorage.getItem("usuarios");
 
-    // Validación: si no hay datos o está vacío
     if (!usuariosGuardados || JSON.parse(usuariosGuardados).length === 0) {
         mostrarMensaje("No hay datos para eliminar.");
         return;
     }
 
-    // Si sí hay datos, se eliminan
     localStorage.removeItem("usuarios");
     mostrarMensaje("Usuarios eliminados correctamente.");
+
+    // Opcional: ocultar si estaba visible
+    document.getElementById("resultado").style.display = "none";
+    document.getElementById("btnVer").textContent = "Ver datos";
 }
 
 // -----------------------------------------------------
-// MOSTRAR MENSAJES
+// MOSTRAR MENSAJE
 // -----------------------------------------------------
 function mostrarMensaje(msg) {
   const res = document.getElementById("resultado");
@@ -172,22 +168,22 @@ function mostrarMensaje(msg) {
   res.style.display = "block";
 }
 
+// -----------------------------------------------------
+// ELIMINAR USUARIO INDIVIDUAL
+// -----------------------------------------------------
 function eliminarUsuario(index) {
-    let usuarios = localStorage.getItem("usuarios");
+    let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
 
-    if (!usuarios) {
+    if (usuarios.length === 0) {
         mostrarMensaje("No hay datos para eliminar.");
         return;
     }
 
-    usuarios = JSON.parse(usuarios);
-
-    // Eliminar uno por índice
     usuarios.splice(index, 1);
-
     localStorage.setItem("usuarios", JSON.stringify(usuarios));
 
     mostrarMensaje("Usuario eliminado correctamente.");
 
-    verDatos();
+    // 🔥 Refrescar vista sin ocultar datos
+    setTimeout(() => verDatos(), 100);
 }
