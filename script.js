@@ -140,15 +140,22 @@ function limpiarFormulario() {
   const email = document.getElementById("email").value.trim();
   const edad = document.getElementById("edad").value.trim();
 
-  if (nombre === "" && email === "" && edad === "") {
+  const hayErrores = [...document.querySelectorAll(".error")]
+                     .some(e => e.textContent.trim() !== "");
+
+  if (nombre === "" && email === "" && edad === "" && !hayErrores) {
     mostrarMensaje("No hay datos para limpiar.");
     return;
   }
 
   document.getElementById("formulario").reset();
+
+  // 🔥 LIMPIAR ERRORES SIEMPRE
   document.querySelectorAll(".error").forEach(e => e.textContent = "");
+
   mostrarMensaje("Formulario limpiado.");
 }
+
 
 // -----------------------------------------------------
 // BORRAR TODOS LOS DATOS
