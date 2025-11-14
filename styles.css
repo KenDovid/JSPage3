@@ -86,3 +86,13 @@ button:hover {
   border-radius: 6px;
   display: none;
 }
+
+
+.usuario-item {
+    padding: 6px;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 10px;
+}
+.btnEliminarUno {
+    margin-top: 5px;
+}
